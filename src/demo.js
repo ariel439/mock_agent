@@ -6,22 +6,22 @@ const marker = '.t-code-demo.json';
 const files = ['index.html', 'styles.css', 'app.js'];
 
 function validateRoot(root) {
-  if (fs.lstatSync(root).isSymbolicLink() || !fs.statSync(root).isDirectory()) throw new Error('Use a regular demo directory.');
+  if (fs.lstatSync(root).isSymbolicLink() || !fs.statSync(root).isDirectory()) throw new Error('Use uma pasta comum para a demonstração.');
   for (const name of [...files, marker]) {
     const target = path.join(root, name);
     let stat;
     try { stat = fs.lstatSync(target); } catch (error) { if (error.code !== 'ENOENT') throw error; }
-    if (stat && (!stat.isFile() || stat.isSymbolicLink())) throw new Error(`Unsafe demo file: ${name}`);
+    if (stat && (!stat.isFile() || stat.isSymbolicLink())) throw new Error(`Arquivo de demonstração inseguro: ${name}`);
   }
 }
 function readStage(root) {
   validateRoot(root);
   const data = JSON.parse(fs.readFileSync(path.join(root, marker), 'utf8'));
-  if (!['t-code-service-hub', 't-code-soft-rock-coffee'].includes(data.demo) || data.version !== 1 || ![0, 1, 2].includes(data.stage)) throw new Error('This folder is not a recognized T-Code demo.');
+  if (!['t-code-service-hub', 't-code-soft-rock-coffee', 't-code-orbita-board', 't-code-soft-rock-takeaway'].includes(data.demo) || data.version !== 1 || ![0, 1, 2].includes(data.stage)) throw new Error('Esta pasta não é uma demonstração T-Code reconhecida.');
   return data.stage;
 }
 function writeStage(root, stage) {
-  const content = { ...snapshot(stage), [marker]: JSON.stringify({ demo: 't-code-soft-rock-coffee', version: 1, stage }, null, 2) + '\n' };
+  const content = { ...snapshot(stage), [marker]: JSON.stringify({ demo: 't-code-soft-rock-takeaway', version: 1, stage }, null, 2) + '\n' };
   const backups = {};
   for (const name of Object.keys(content)) backups[name] = fs.existsSync(path.join(root, name)) ? fs.readFileSync(path.join(root, name)) : null;
   try {
@@ -37,15 +37,15 @@ function writeStage(root, stage) {
 function initialize(root) {
   fs.mkdirSync(root, { recursive: true });
   validateRoot(root);
-  if (fs.readdirSync(root).length) throw new Error('Initialize requires an empty folder.');
+  if (fs.readdirSync(root).length) throw new Error('A inicialização exige uma pasta vazia.');
   writeStage(root, 0);
 }
 function advance(root) {
   const stage = readStage(root);
-  if (stage === 2) throw new Error('Both tickets are complete. Reset the demo to present again.');
+  if (stage === 2) throw new Error('As duas tarefas foram concluídas. Reinicie a demonstração para apresentar novamente.');
   const before = snapshot(stage);
   for (const name of files) {
-    if (fs.readFileSync(path.join(root, name), 'utf8') !== before[name]) throw new Error(`${name} has manual changes. Save a copy, then reset the demo before continuing.`);
+    if (fs.readFileSync(path.join(root, name), 'utf8') !== before[name]) throw new Error(`${name} tem alterações manuais. Salve uma cópia e reinicie a demonstração antes de continuar.`);
   }
   writeStage(root, stage + 1);
   return { stage: stage + 1, ticket: tickets[stage], before, after: snapshot(stage + 1) };
@@ -58,7 +58,7 @@ function findRoot(workspaces) {
       if (fs.existsSync(path.join(candidate, marker))) { readStage(candidate); found.add(path.resolve(candidate)); }
     }
   }
-  if (found.size !== 1) throw new Error(found.size ? 'Open only one T-Code demo project.' : 'Open the supplied demo-project folder to begin.');
+  if (found.size !== 1) throw new Error(found.size ? 'Abra apenas um projeto de demonstração T-Code.' : 'Abra a pasta demo-project fornecida para começar.');
   return [...found][0];
 }
 module.exports = { marker, files, initialize, readStage, advance, reset, findRoot };

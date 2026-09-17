@@ -5,8 +5,11 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const demo = require('./demo');
 const { tickets } = require('./scenario');
+const { createSettings } = require('./settings');
+const { summarizeChanges } = require('./changes');
 
 function activate(context) {
+  const settings = createSettings(context);
   let view, preview, busy = false, disposed = false;
   let messages = context.workspaceState.get('messages', []);
   let lastStage = context.workspaceState.get('stage', 0);
@@ -25,7 +28,7 @@ function activate(context) {
   const publish = () => view?.webview.postMessage(state());
   function ensureSaved(folder) {
     const dirty = vscode.workspace.textDocuments.find(doc => doc.isDirty && demo.files.some(name => doc.uri.fsPath === path.join(folder, name)));
-    if (dirty) throw new Error(`Save or revert ${path.basename(dirty.uri.fsPath)} before changing the demo.`);
+    if (dirty) throw new Error(`Salve ou reverta ${path.basename(dirty.uri.fsPath)} antes de alterar a demonstração.`);
   }
   function refreshPreview() {
     if (!preview) return;
@@ -50,11 +53,11 @@ function activate(context) {
   }
   async function submit(text) {
     if (busy || typeof text !== 'string' || !text.trim()) return;
-    if (text.length > 20000) throw new Error('Keep the ticket under 20,000 characters.');
+    if (text.length > 20000) throw new Error('Use menos de 20.000 caracteres na solicitação.');
     const folder = root();
     ensureSaved(folder);
     const current = state();
-    if (current.stage === 2) throw new Error('Both tickets are complete. Reset the demo to present again.');
+    if (current.stage === 2) throw new Error('As duas tarefas foram concluídas. Reinicie a demonstração para apresentar novamente.');
     busy = true;
     messages.push({ role: 'user', text: text.trim() });
     publish();
@@ -63,14 +66,15 @@ function activate(context) {
       for (const step of ticket.steps) {
         progress = step;
         publish();
-        await new Promise(resolve => setTimeout(resolve, 450));
+        await new Promise(resolve => setTimeout(resolve, 7500 / ticket.steps.length));
         if (disposed) return;
       }
       ensureSaved(folder);
-      if (demo.readStage(folder) !== current.stage) throw new Error('The demo changed during this run. Please submit the ticket again.');
+      if (demo.readStage(folder) !== current.stage) throw new Error('A demonstração mudou durante a execução. Envie a tarefa novamente.');
       const result = demo.advance(folder);
       lastStage = result.stage;
-      messages.push({ role: 'assistant', text: `${ticket.id} · ${ticket.title}\n\n${ticket.summary}`, files: ticket.files, stage: result.stage });
+      const changes = summarizeChanges(result.before, result.after);
+      messages.push({ role: 'assistant', text: `${ticket.id} · ${ticket.title}\n\n${ticket.summary}`, files: changes.map(file => file.name), changes, stage: result.stage });
       await persist();
       refreshPreview();
     } catch (e) {
@@ -86,13 +90,26 @@ function activate(context) {
     if (busy) return;
     const folder = root();
     ensureSaved(folder);
-    const choice = await vscode.window.showWarningMessage('Reset the demo? This restores index.html, styles.css and app.js, and clears the chat.', { modal: true }, 'Reset demo');
-    if (choice !== 'Reset demo' || busy) return;
+    const choice = await vscode.window.showWarningMessage('Reiniciar a demonstração? Isso restaura index.html, styles.css e app.js e limpa a conversa.', { modal: true }, 'Reiniciar demonstração');
+    if (choice !== 'Reiniciar demonstração' || busy) return;
     ensureSaved(folder);
     demo.reset(folder);
     messages = []; lastStage = 0;
     await persist();
     refreshPreview(); publish();
+  }
+  async function showDiff(name, stage) {
+    if (!demo.files.includes(name) || ![1, 2].includes(stage)) return;
+    const before = vscode.Uri.parse(`t-code-snapshot:/${stage - 1}/${name}`);
+    const after = vscode.Uri.parse(`t-code-snapshot:/${stage}/${name}`);
+    await vscode.commands.executeCommand('vscode.diff', before, after, `${name} · TCODE-${100 + stage}`, { preview: false });
+  }
+  async function review(stage) {
+    if (![1, 2].includes(stage)) return;
+    const { snapshot } = require('./scenario');
+    const changes = summarizeChanges(snapshot(stage - 1), snapshot(stage));
+    const selected = await vscode.window.showQuickPick(changes.map(file => ({ label: file.name, description: `+${file.additions} −${file.deletions}` })), { title: `Revisar alterações · TCODE-${100 + stage}`, placeHolder: 'Escolha um arquivo para comparar antes e depois' });
+    if (selected) await showDiff(selected.label, stage);
   }
   const safely = fn => async (...args) => {
     try { return await fn(...args); }
@@ -111,10 +128,16 @@ function activate(context) {
       view.webview.onDidReceiveMessage(safely(async message => {
         if (!message || typeof message !== 'object') return;
         switch (message.type) {
-          case 'ready': publish(); break;
+          case 'ready': publish(); view.webview.postMessage(await settings.read()); break;
+          case 'saveSettings': {
+            try { view.webview.postMessage(await settings.save(message)); }
+            catch (error) { view.webview.postMessage({ type: 'settingsError', message: error.message }); }
+            break;
+          }
           case 'submit': await submit(message.text); break;
           case 'reset': await resetDemo(); break;
           case 'preview': await showPreview(); break;
+          case 'review': await review(message.stage); break;
           case 'ticket': {
             if (![0, 1].includes(message.index)) return;
             const content = fs.readFileSync(path.join(context.extensionPath, 'tickets', `TCODE-${101 + message.index}.md`), 'utf8');
@@ -127,10 +150,7 @@ function activate(context) {
             break;
           }
           case 'diff': {
-            if (!demo.files.includes(message.name) || ![1, 2].includes(message.stage)) return;
-            const before = vscode.Uri.parse(`t-code-snapshot:/${message.stage - 1}/${message.name}`);
-            const after = vscode.Uri.parse(`t-code-snapshot:/${message.stage}/${message.name}`);
-            await vscode.commands.executeCommand('vscode.diff', before, after, `${message.name} · TCODE-${100 + message.stage}`);
+            await showDiff(message.name, message.stage);
             break;
           }
         }
@@ -156,6 +176,6 @@ function activate(context) {
   const changed = () => { if (!busy) { publish(); try { refreshPreview(); } catch { /* Closed workspace. */ } } };
   context.subscriptions.push(watcher, watcher.onDidChange(changed), watcher.onDidCreate(changed), watcher.onDidDelete(changed));
   // The same entry point used by the chat is exposed to the Extension Host test.
-  return { submit, state, showPreview };
+  return { submit, state, showPreview, showDiff };
 }
 module.exports = { activate };

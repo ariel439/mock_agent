@@ -1,8 +1,18 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{cspSource}}; script-src 'nonce-{{nonce}}'; connect-src 'none';"><link rel="stylesheet" href="{{css}}"><title>T-Code</title></head>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{cspSource}}; script-src 'nonce-{{nonce}}'; connect-src 'none';"><link rel="stylesheet" href="{{css}}"><title>T-Code</title></head>
 <body><div class="app-shell">
-  <header class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true">T</span><h1>T-Code</h1></div></header>
-  <main id="conversation" class="messages" aria-label="Chat messages"><div id="messages" role="log" aria-live="polite" aria-relevant="additions"></div><div id="progress" role="status" hidden><span class="spinner"></span><span id="progress-text"></span></div></main>
+  <header class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true">T</span><h1>T-Code</h1></div><button id="settings-toggle" class="icon-button" type="button" title="Configurações" aria-label="Configurações" aria-expanded="false">⚙</button></header>
+  <main id="settings" class="settings-view" aria-label="Configurações" hidden>
+    <h2>Configurações</h2>
+    <form id="settings-form" class="settings-group">
+      <label class="field"><span>URL da API</span><input id="api-url" type="url" placeholder="https://seu-provedor/v1" spellcheck="false" required></label>
+      <label class="field"><span>Chave secreta</span><input id="api-secret" type="password" placeholder="Cole a chave da API" autocomplete="off" spellcheck="false"><small>A chave é armazenada com segurança no VS Code.</small></label>
+      <label class="field"><span>Modelo do agente</span><select id="agent-model" required></select></label>
+      <button id="save-settings" type="submit">Salvar configurações</button>
+      <p id="settings-status" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+  <main id="conversation" class="messages" aria-label="Mensagens da conversa"><div id="messages" role="log" aria-live="polite" aria-relevant="additions"></div><div id="progress" role="status" hidden><span class="spinner"></span><span id="progress-text"></span></div></main>
   <div id="error" role="alert" hidden></div>
-  <form id="composer" class="composer"><textarea id="prompt" aria-label="Prompt" rows="1" placeholder="Message T-Code" maxlength="20000"></textarea><button id="send" class="send-button" type="submit" title="Send" aria-label="Send message"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form>
+  <form id="composer" class="composer"><textarea id="prompt" aria-label="Mensagem" rows="1" placeholder="Envie uma mensagem ao T-Code" maxlength="20000"></textarea><button id="send" class="send-button" type="submit" title="Enviar" aria-label="Enviar mensagem"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form>
 </div><script nonce="{{nonce}}" src="{{js}}"></script></body></html>

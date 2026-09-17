@@ -1,2 +1,2 @@
 'use strict';
-// Soft Rock Coffee: the menu is taking shape.
+// Soft Rock Coffee: cardápio da casa.

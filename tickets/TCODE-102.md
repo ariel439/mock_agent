@@ -1,19 +1,16 @@
-# TCODE-102 — Add filters and an order summary
+﻿# TCODE-102 — Montar um pedido para levar
 
-**Type:** Story · **Priority:** High · **Project:** Soft Rock Coffee
+**Tipo:** História · **Prioridade:** Média · **Projeto:** Soft Rock Coffee
 
-As a customer, I want to filter the drinks menu and build an order so I can choose my coffee and see the total before ordering at the counter.
+Quero selecionar minhas bebidas e conferir as quantidades e o total antes de pedir no balcão.
 
-Add temperature filters and a simple order summary to the menu from TCODE-101. Keep the current café design and photos. Use plain JavaScript with no backend or checkout.
+Adicione um pequeno botão **+** ao lado de cada bebida. Ao adicionar, atualize a quantidade e o total sem abrir a sacola ou tirar o foco do botão. Abra a sacola lateral somente ao clicar em Ver pedido, preservando a estrutura e o visual do cardápio.
 
-Acceptance criteria:
-- Add All drinks, Hot, and Iced buttons above the menu. Show the selected filter and the number of visible drinks.
-- Add an Add to order button to each drink card.
-- Below the menu, show an order summary with each selected drink, quantity, and line subtotal.
-- Adding a drink again increases its quantity instead of creating a duplicate row.
-- Include increase, decrease, and Remove controls; decreasing to zero removes the drink. Quantities range from 1 to 99.
-- Update the drink count and total immediately, using the menu's USD prices and accurate cent arithmetic.
-- Filtering the menu must not remove anything from the order.
-- Include a Clear order action and an empty-order message. Clearing restores the $0.00 total.
-- All controls must work with the keyboard and announce order updates accessibly.
-- Keep the order in memory only: refreshing the browser clears it. No payment, checkout, network requests, or persistent storage.
+Critérios de aceite:
+- Mostrar as bebidas selecionadas, preço unitário, quantidades, subtotais e total em reais.
+- Adicionar a mesma bebida novamente aumenta sua quantidade, sem duplicar a linha.
+- Permitir aumentar, diminuir e remover bebidas, além de limpar o pedido. Limitar a 99 unidades por bebida; diminuir até zero remove o item.
+- Permitir fechar a sacola ou continuar escolhendo. Escape fecha e devolve o foco ao botão de origem.
+- Mostrar um botão para reabrir o pedido com o total; no celular, usar uma barra fixa inferior, como Ver pedido · R$ 18,00.
+- Atualizar valores imediatamente usando centavos inteiros, anunciar mudanças de forma acessível e permitir operação pelo teclado.
+- Manter o pedido somente em memória: recarregar a página limpa a seleção. Não enviar pedidos, processar pagamentos ou fazer chamadas de rede. Orientar o visitante a mostrar a seleção no balcão.

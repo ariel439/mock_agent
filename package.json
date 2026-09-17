@@ -1,26 +1,59 @@
 {
   "name": "t-code",
   "displayName": "T-Code",
-  "description": "Offline, scripted coding assistant for the T-Code presentation.",
-  "version": "0.2.0",
+  "description": "Assistente de programação com roteiro offline para a apresentação do T-Code.",
+  "version": "0.3.0",
   "publisher": "t-code-demo",
   "license": "UNLICENSED",
   "private": true,
-  "engines": { "vscode": "^1.101.0" },
-  "categories": ["Other"],
+  "engines": {
+    "vscode": "^1.101.0"
+  },
+  "categories": [
+    "Other"
+  ],
   "main": "./src/extension.js",
-  "capabilities": { "untrustedWorkspaces": { "supported": false } },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false
+    }
+  },
   "contributes": {
-    "viewsContainers": { "activitybar": [{ "id": "t-code", "title": "T-Code", "icon": "media/t.svg" }] },
-    "views": { "t-code": [{ "id": "tCode.chat", "name": "T-Code", "type": "webview" }] },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "t-code",
+          "title": "T-Code",
+          "icon": "media/t.svg"
+        }
+      ]
+    },
+    "views": {
+      "t-code": [
+        {
+          "id": "tCode.chat",
+          "name": "T-Code",
+          "type": "webview"
+        }
+      ]
+    },
     "commands": [
-      { "command": "tCode.focus", "title": "T-Code: Open Chat" },
-      { "command": "tCode.preview", "title": "T-Code: Preview Demo Page" },
-      { "command": "tCode.reset", "title": "T-Code: Reset Demo" }
+      {
+        "command": "tCode.focus",
+        "title": "T-Code: Abrir conversa"
+      },
+      {
+        "command": "tCode.preview",
+        "title": "T-Code: Visualizar página de demonstração"
+      },
+      {
+        "command": "tCode.reset",
+        "title": "T-Code: Reiniciar demonstração"
+      }
     ]
   },
   "scripts": {
-    "test": "node --test tests/core.test.js tests/order.test.js",
+    "test": "node --test tests/core.test.js tests/order.test.js tests/settings.test.js tests/changes.test.js",
     "check": "node scripts/check.js && npm test && npm run docs:check",
     "docs:check": "node scripts/docs-check.js",
     "qa:offline": "npm test",

@@ -1,78 +1,71 @@
 'use strict';
-
+function money(cents) { return 'R$ ' + (cents / 100).toFixed(2).replace('.', ','); }
 function changeQuantity(order, id, delta, drinks) {
   if (!drinks.some(drink => drink.id === id) || !Number.isInteger(delta)) return { ...order };
   const next = { ...order };
   const quantity = Math.max(0, Math.min(99, (next[id] || 0) + delta));
-  if (quantity) next[id] = quantity;
-  else delete next[id];
+  if (quantity) next[id] = quantity; else delete next[id];
   return next;
 }
-
-function totalCents(order, drinks) {
-  return drinks.reduce((total, drink) => total + drink.price * (order[drink.id] || 0), 0);
-}
-
+function totalCents(order, drinks) { return drinks.reduce((sum, drink) => sum + drink.price * (order[drink.id] || 0), 0); }
 function mountMenu(drinks, doc) {
-  const money = cents => '$' + (cents / 100).toFixed(2);
   let order = {};
-  const filters = [...doc.querySelectorAll('[data-filter]')];
-  const cards = [...doc.querySelectorAll('.drink-card')];
-  function focusMenu(id) {
-    const add = doc.querySelector('[data-add="' + id + '"]');
-    const target = add && !add.closest('.drink-card').hidden ? add : filters.find(button => button.getAttribute('aria-pressed') === 'true');
-    target.focus();
-  }
-  for (const button of filters) button.addEventListener('click', () => {
-    let count = 0;
-    for (const card of cards) {
-      card.hidden = button.dataset.filter !== 'All' && card.dataset.category !== button.dataset.filter;
-      if (!card.hidden) count++;
-    }
-    for (const filter of filters) filter.setAttribute('aria-pressed', String(filter === button));
-    doc.querySelector('#result-count').textContent = count + (count === 1 ? ' drink on the menu' : ' drinks on the menu');
-  });
-  function renderOrder(announcement = '') {
-    const list = doc.querySelector('#order-items');
+  const drawer = doc.querySelector('#order-drawer');
+  const list = doc.querySelector('#order-items');
+  const launcher = doc.querySelector('#view-order');
+  const close = doc.querySelector('#close-order');
+  const open = () => { if (!drawer.open) drawer.showModal(); };
+  launcher.addEventListener('click', open);
+  close.addEventListener('click', () => drawer.close());
+  doc.querySelector('#continue-order').addEventListener('click', () => drawer.close());
+  function render(announcement = '') {
     list.replaceChildren();
     for (const drink of drinks) {
       const quantity = order[drink.id];
       if (!quantity) continue;
-      const row = doc.createElement('li'); row.className = 'order-item';
-      const name = doc.createElement('span'); name.className = 'order-item-name'; name.textContent = drink.name;
+      const row = doc.createElement('li'); row.className = 'order-item'; row.dataset.item = drink.id;
+      const heading = doc.createElement('div'); heading.className = 'order-item-heading';
+      const name = doc.createElement('h3'); name.textContent = drink.name;
+      const subtotal = doc.createElement('strong'); subtotal.textContent = money(drink.price * quantity);
+      heading.append(name, subtotal);
+      const unit = doc.createElement('p'); unit.textContent = money(drink.price) + ' por unidade';
+      const actions = doc.createElement('div'); actions.className = 'order-item-actions';
       const controls = doc.createElement('div'); controls.className = 'quantity-controls';
-      const count = doc.createElement('span'); count.textContent = String(quantity); count.setAttribute('aria-label', drink.name + ' quantity');
-      function quantityButton(delta, label, text) {
-        const button = doc.createElement('button'); button.type = 'button'; button.textContent = text;
-        button.setAttribute('aria-label', label + ' ' + drink.name); button.dataset.control = drink.id + '-' + delta;
-        button.addEventListener('click', () => {
+      function button(delta, label, text) {
+        const el = doc.createElement('button'); el.type = 'button'; el.textContent = text;
+        el.setAttribute('aria-label', label + ' ' + drink.name); el.dataset.control = drink.id + ':' + delta;
+        el.disabled = delta === 1 && quantity === 99;
+        el.addEventListener('click', () => {
           order = changeQuantity(order, drink.id, delta, drinks);
-          renderOrder(drink.name + ' quantity: ' + (order[drink.id] || 0));
-          const replacement = [...doc.querySelectorAll('[data-control]')].find(el => el.dataset.control === button.dataset.control);
-          if (replacement) replacement.focus();
-          else focusMenu(drink.id);
+          render(drink.name + ': ' + (order[drink.id] || 0) + ' no pedido.');
+          const replacement = [...doc.querySelectorAll('[data-control]')].find(item => item.dataset.control === el.dataset.control);
+          if (replacement && !replacement.disabled) replacement.focus();
+          else if (order[drink.id]) doc.querySelector(`[data-control="${drink.id}:-1"]`).focus();
+          else close.focus();
         });
-        return button;
+        return el;
       }
-      controls.append(quantityButton(-1, 'Decrease', '−'), count, quantityButton(1, 'Increase', '+'));
-      const subtotal = doc.createElement('span'); subtotal.className = 'line-total'; subtotal.textContent = money(quantity * drink.price);
-      const remove = doc.createElement('button'); remove.type = 'button'; remove.className = 'remove-item'; remove.textContent = 'Remove'; remove.setAttribute('aria-label', 'Remove ' + drink.name);
-      remove.addEventListener('click', () => { delete order[drink.id]; renderOrder(drink.name + ' removed'); focusMenu(drink.id); });
-      row.append(name, controls, subtotal, remove); list.append(row);
+      const count = doc.createElement('span'); count.textContent = quantity; count.setAttribute('aria-label', 'Quantidade de ' + drink.name);
+      controls.append(button(-1, 'Diminuir', '−'), count, button(1, 'Aumentar', '+'));
+      const remove = doc.createElement('button'); remove.type = 'button'; remove.className = 'remove-item'; remove.textContent = 'Remover'; remove.setAttribute('aria-label', 'Remover ' + drink.name);
+      remove.addEventListener('click', () => { delete order[drink.id]; render(drink.name + ' removido.'); close.focus(); });
+      actions.append(controls, remove); row.append(heading, unit, actions); list.append(row);
     }
-    const count = Object.values(order).reduce((sum, quantity) => sum + quantity, 0);
-    doc.querySelector('#order-count').textContent = count + (count === 1 ? ' drink' : ' drinks');
+    const count = Object.values(order).reduce((sum, n) => sum + n, 0);
+    const total = money(totalCents(order, drinks));
+    doc.querySelector('#order-total').textContent = total;
+    doc.querySelector('#launcher-total').textContent = total;
+    doc.querySelector('#launcher-count').textContent = count;
+    launcher.setAttribute('aria-label', `Ver pedido: ${count} ${count === 1 ? 'bebida' : 'bebidas'}, ${total}`);
     doc.querySelector('#order-empty').hidden = count !== 0;
-    doc.querySelector('#order-total').textContent = money(totalCents(order, drinks));
     doc.querySelector('#clear-order').disabled = count === 0;
-    doc.querySelector('#order-status').textContent = announcement ? announcement + '. Total ' + money(totalCents(order, drinks)) : '';
+    for (const id of ['order-status', 'drawer-status']) doc.querySelector('#' + id).textContent = announcement ? announcement + ' Total: ' + total : '';
   }
-  for (const button of doc.querySelectorAll('[data-add]')) button.addEventListener('click', () => {
-    order = changeQuantity(order, button.dataset.add, 1, drinks);
-    renderOrder(drinks.find(drink => drink.id === button.dataset.add).name + ' added');
+  for (const add of doc.querySelectorAll('[data-add]')) add.addEventListener('click', () => {
+    order = changeQuantity(order, add.dataset.add, 1, drinks);
+    render(drinks.find(drink => drink.id === add.dataset.add).name + ' adicionado.');
   });
-  doc.querySelector('#clear-order').addEventListener('click', () => { order = {}; renderOrder('Order cleared'); focusMenu(drinks[0].id); });
-  renderOrder();
+  doc.querySelector('#clear-order').addEventListener('click', () => { order = {}; render('Pedido limpo.'); close.focus(); });
+  render();
 }
-
-if (typeof module !== 'undefined') module.exports = { changeQuantity, totalCents, mountMenu };
+if (typeof module !== 'undefined') module.exports = { money, changeQuantity, totalCents, mountMenu };

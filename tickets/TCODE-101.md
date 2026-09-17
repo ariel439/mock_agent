@@ -1,16 +1,15 @@
-# TCODE-101 — Build the Soft Rock Coffee menu
+﻿# TCODE-101 — Organizar o cardápio por temperatura
 
-**Type:** Story · **Priority:** High · **Project:** Soft Rock Coffee
+**Tipo:** História · **Prioridade:** Média · **Projeto:** Soft Rock Coffee
 
-As a customer, I want to browse the café's drinks so I can find my next favorite coffee.
+O site já está pronto, mas o cardápio mistura bebidas quentes e geladas. Quero encontrar meu café com mais facilidade.
 
-Replace the menu placeholder on the existing Soft Rock Coffee page with six drink cards. Keep the café header, hero photo, story, and footer. Match the cream background, espresso-brown text, and muted terracotta accents. Use the photos already provided in `images/`.
+Reorganize somente a seção do cardápio em **Clássicos quentes** e **Cafés gelados**. Use uma foto de destaque por seção, mantendo o estilo de cafeteria: fundo creme, tipografia marrom, detalhes terracota e divisórias finas.
 
-Acceptance criteria:
-- Show Espresso ($3.00), Americano ($3.50), Flat White ($4.50), Cappuccino ($4.50), Mocha ($5.00), and Cold Brew ($4.75). Prices are in USD.
-- Each card includes its matching local photo, a short description, price, and a Hot or Iced label. Cold Brew is Iced; the other five drinks are Hot.
-- Use `espresso.jpg`, `americano.jpg`, `flat-white.jpg`, `cappuccino.jpg`, `mocha.jpg`, and `cold-brew.jpg` from `images/`.
-- Use three columns on desktop, two on tablet, and one on mobile, with no horizontal overflow.
-- Give every photo descriptive alternative text.
-- Use plain HTML and CSS. All photos, fonts, and other resources must work offline when opening `index.html` directly.
-- Leave ordering and filters for the next ticket.
+Critérios de aceite:
+- Clássicos quentes: Espresso (R$ 8,00), Americano (R$ 10,00), Flat White (R$ 14,00) e Cappuccino (R$ 14,00).
+- Cafés gelados: Cold Brew (R$ 16,00) e Mocha gelado (R$ 18,00).
+- Preservar os nomes, descrições e preços existentes. Usar cappuccino.jpg e cold-brew.jpg da pasta images/, com texto alternativo.
+- Mostrar foto e lista lado a lado no desktop e empilhadas no celular.
+- Preservar o cabeçalho, a seção principal com foto da cafeteria, a história e o rodapé.
+- Não adicionar pedidos ou novos controles nesta entrega. Continuar funcionando offline ao abrir index.html.

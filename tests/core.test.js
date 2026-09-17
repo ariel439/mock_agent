@@ -17,10 +17,10 @@ test('two sequential tickets, completion guard, reset and replay', t => {
   assert.equal(demo.readStage(root), 0);
   assert.equal(demo.advance(root).ticket.id, 'TCODE-101');
   assert.equal(demo.readStage(root), 1);
-  assert.equal((fs.readFileSync(path.join(root, 'index.html'), 'utf8').match(/class="drink-card"/g) || []).length, 6);
+  assert.equal((fs.readFileSync(path.join(root, 'index.html'), 'utf8').match(/class="drink-row"/g) || []).length, 6);
   assert.equal(demo.advance(root).ticket.id, 'TCODE-102');
   for (const name of demo.files) assert.equal(fs.readFileSync(path.join(root, name), 'utf8'), snapshot(2)[name]);
-  assert.throws(() => demo.advance(root), /Both tickets/);
+  assert.throws(() => demo.advance(root), /As duas tarefas/);
   demo.reset(root);
   for (const name of demo.files) assert.equal(fs.readFileSync(path.join(root, name), 'utf8'), snapshot(0)[name]);
   assert.equal(demo.advance(root).ticket.id, 'TCODE-101');
@@ -28,7 +28,7 @@ test('two sequential tickets, completion guard, reset and replay', t => {
 test('manual edits block the next ticket without changing files or stage', t => {
   const root = fixture(t);
   fs.appendFileSync(path.join(root, 'styles.css'), '\n/* user edit */');
-  assert.throws(() => demo.advance(root), /manual changes/);
+  assert.throws(() => demo.advance(root), /alterações manuais/);
   assert.equal(demo.readStage(root), 0);
   assert.equal(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), snapshot(0)['index.html']);
   assert.match(fs.readFileSync(path.join(root, 'styles.css'), 'utf8'), /user edit/);
@@ -42,7 +42,7 @@ test('reset only touches known files and requires a recognized marker', t => {
   assert.equal(fs.readFileSync(path.join(root, 'notes.md'), 'utf8'), 'Keep me');
   assert.equal(fs.readFileSync(path.join(root, 'images', 'cafe.jpg'), 'utf8'), 'photo bytes');
   fs.writeFileSync(path.join(root, demo.marker), '{}');
-  assert.throws(() => demo.reset(root), /not a recognized/);
+  assert.throws(() => demo.reset(root), /não é uma demonstração/);
 });
 test('workspace discovery supports the parent and rejects ambiguity', t => {
   const root = fixture(t);
@@ -51,24 +51,24 @@ test('workspace discovery supports the parent and rejects ambiguity', t => {
   t.after(() => fs.rmSync(parent, { recursive: true, force: true }));
   const child = path.join(parent, 'demo-project'); demo.initialize(child);
   assert.equal(demo.findRoot([parent]), child);
-  assert.throws(() => demo.findRoot([root, parent]), /only one/);
-  assert.throws(() => demo.findRoot([]), /Open the supplied/);
+  assert.throws(() => demo.findRoot([root, parent]), /apenas um/);
+  assert.throws(() => demo.findRoot([]), /Abra a pasta/);
 });
 test('unsafe file types and invalid stages cannot be overwritten', t => {
   const root = fixture(t);
   fs.unlinkSync(path.join(root, 'app.js')); fs.mkdirSync(path.join(root, 'app.js'));
-  assert.throws(() => demo.reset(root), /Unsafe demo file/);
-  assert.throws(() => snapshot(3), /Invalid demo stage/);
+  assert.throws(() => demo.reset(root), /Arquivo de demonstração inseguro/);
+  assert.throws(() => snapshot(3), /Etapa de demonstração inválida/);
 });
 test('initialize refuses a populated directory', t => {
   const root = fixture(t);
-  assert.throws(() => demo.initialize(root), /empty folder/);
+  assert.throws(() => demo.initialize(root), /pasta vazia/);
 });
-test('reset migrates a previous Service Hub marker to the coffee scenario', t => {
+test('reset migrates a previous Service Hub marker to the takeaway scenario', t => {
   const root = fixture(t);
   fs.writeFileSync(path.join(root, demo.marker), JSON.stringify({ demo: 't-code-service-hub', version: 1, stage: 2 }));
   demo.reset(root);
   assert.equal(demo.readStage(root), 0);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(root, demo.marker), 'utf8')).demo, 't-code-soft-rock-coffee');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root, demo.marker), 'utf8')).demo, 't-code-soft-rock-takeaway');
   assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /Soft Rock Coffee/);
 });
