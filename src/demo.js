@@ -17,11 +17,11 @@ function validateRoot(root) {
 function readStage(root) {
   validateRoot(root);
   const data = JSON.parse(fs.readFileSync(path.join(root, marker), 'utf8'));
-  if (data.demo !== 't-code-service-hub' || data.version !== 1 || ![0, 1, 2].includes(data.stage)) throw new Error('This folder is not a recognized T-Code demo.');
+  if (!['t-code-service-hub', 't-code-soft-rock-coffee'].includes(data.demo) || data.version !== 1 || ![0, 1, 2].includes(data.stage)) throw new Error('This folder is not a recognized T-Code demo.');
   return data.stage;
 }
 function writeStage(root, stage) {
-  const content = { ...snapshot(stage), [marker]: JSON.stringify({ demo: 't-code-service-hub', version: 1, stage }, null, 2) + '\n' };
+  const content = { ...snapshot(stage), [marker]: JSON.stringify({ demo: 't-code-soft-rock-coffee', version: 1, stage }, null, 2) + '\n' };
   const backups = {};
   for (const name of Object.keys(content)) backups[name] = fs.existsSync(path.join(root, name)) ? fs.readFileSync(path.join(root, name)) : null;
   try {

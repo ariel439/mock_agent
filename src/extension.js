@@ -30,18 +30,20 @@ function activate(context) {
   function refreshPreview() {
     if (!preview) return;
     const folder = root();
+    preview.webview.options = { enableScripts: true, localResourceRoots: [vscode.Uri.file(path.join(folder, 'images'))] };
     const nonce = crypto.randomBytes(16).toString('hex');
     let html = fs.readFileSync(path.join(folder, 'index.html'), 'utf8');
     html = html.replace('<link rel="stylesheet" href="styles.css">', `<style nonce="${nonce}">${fs.readFileSync(path.join(folder, 'styles.css'), 'utf8')}</style>`);
     html = html.replace('<script src="app.js" defer></script>', '');
     html = html.replace('</body>', `<script nonce="${nonce}">${fs.readFileSync(path.join(folder, 'app.js'), 'utf8')}</script></body>`);
-    html = html.replace('<head>', `<head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}'; connect-src 'none';">`);
+    html = html.replace(/src="images\/([a-z-]+\.jpg)"/g, (_, name) => `src="${preview.webview.asWebviewUri(vscode.Uri.file(path.join(folder, 'images', name)))}"`);
+    html = html.replace('<head>', `<head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${preview.webview.cspSource}; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}'; connect-src 'none';">`);
     preview.webview.html = html;
   }
   async function showPreview() {
     root();
     if (!preview) {
-      preview = vscode.window.createWebviewPanel('tCode.preview', 'Service Hub · T-Code', vscode.ViewColumn.One, { enableScripts: true, localResourceRoots: [] });
+      preview = vscode.window.createWebviewPanel('tCode.preview', 'Soft Rock Coffee', vscode.ViewColumn.One, { enableScripts: true, localResourceRoots: [] });
       preview.onDidDispose(() => { preview = undefined; }, null, context.subscriptions);
     } else preview.reveal(vscode.ViewColumn.One, true);
     refreshPreview();

@@ -1,2 +1,2 @@
 'use strict';
-// Service Hub: no interactive controls yet.
+// Soft Rock Coffee: the menu is taking shape.

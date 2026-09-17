@@ -1,14 +1,16 @@
-# TCODE-101 — Build the service catalog
+# TCODE-101 — Build the Soft Rock Coffee menu
 
-**Type:** Story · **Priority:** High · **Project:** Service Hub
+**Type:** Story · **Priority:** High · **Project:** Soft Rock Coffee
 
-As an employee, I want to discover our enterprise services in one place so I can quickly understand what is available to my team.
+As a customer, I want to browse the café's drinks so I can find my next favorite coffee.
 
-Replace the “coming soon” placeholder on the existing Service Hub page with a polished service catalog. Keep the current header and hero. Use magenta accents and a clean, responsive layout.
+Replace the menu placeholder on the existing Soft Rock Coffee page with six drink cards. Keep the café header, hero photo, story, and footer. Match the cream background, espresso-brown text, and muted terracotta accents. Use the photos already provided in `images/`.
 
 Acceptance criteria:
-- Show six services: Cloud workspace, Access management, Data platform, Network connect, Security operations, and Analytics studio.
-- Each card includes a category, short description, and availability indicator.
-- Categories are Infrastructure, Security, and Data. Network connect is in Maintenance; the other services are Available.
-- Use a three-column grid on desktop, two on tablet, and one on mobile.
-- Keep the implementation in plain HTML and CSS, without external dependencies.
+- Show Espresso ($3.00), Americano ($3.50), Flat White ($4.50), Cappuccino ($4.50), Mocha ($5.00), and Cold Brew ($4.75). Prices are in USD.
+- Each card includes its matching local photo, a short description, price, and a Hot or Iced label. Cold Brew is Iced; the other five drinks are Hot.
+- Use `espresso.jpg`, `americano.jpg`, `flat-white.jpg`, `cappuccino.jpg`, `mocha.jpg`, and `cold-brew.jpg` from `images/`.
+- Use three columns on desktop, two on tablet, and one on mobile, with no horizontal overflow.
+- Give every photo descriptive alternative text.
+- Use plain HTML and CSS. All photos, fonts, and other resources must work offline when opening `index.html` directly.
+- Leave ordering and filters for the next ticket.

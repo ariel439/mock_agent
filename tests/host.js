@@ -22,10 +22,10 @@ exports.run = async () => {
   await vscode.commands.executeCommand('workbench.action.files.revert');
   await api.submit('Any second prompt');
   assert.equal(api.state().stage, 2);
-  assert.match(fs.readFileSync(path.join(root, 'app.js'), 'utf8'), /filterServices/);
+  assert.match(fs.readFileSync(path.join(root, 'app.js'), 'utf8'), /mountMenu/);
   await assert.rejects(() => api.submit('Third'), /Both tickets/);
   const diff = await vscode.workspace.openTextDocument(vscode.Uri.parse('t-code-snapshot:/1/index.html'));
-  assert.match(diff.getText(), /service-card/);
+  assert.match(diff.getText(), /drink-card/);
   require('../src/demo').reset(root);
   assert.equal(api.state().stage, 0);
   assert.equal(api.state().messages.length, 0);

@@ -8,6 +8,7 @@ async function main() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 't-code-host-'));
   const workspace = path.join(temp, 'demo-project');
   demo.initialize(workspace);
+  fs.cpSync(path.resolve(__dirname, '..', 'demo-project', 'images'), path.join(workspace, 'images'), { recursive: true });
   try {
     await runTests({
       ...(process.env.TCODE_VSCODE_EXECUTABLE ? { vscodeExecutablePath: process.env.TCODE_VSCODE_EXECUTABLE } : {}),

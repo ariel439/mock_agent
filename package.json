@@ -2,7 +2,7 @@
   "name": "t-code",
   "displayName": "T-Code",
   "description": "Offline, scripted coding assistant for the T-Code presentation.",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "publisher": "t-code-demo",
   "license": "UNLICENSED",
   "private": true,
@@ -20,7 +20,7 @@
     ]
   },
   "scripts": {
-    "test": "node --test tests/core.test.js",
+    "test": "node --test tests/core.test.js tests/order.test.js",
     "check": "node scripts/check.js && npm test && npm run docs:check",
     "docs:check": "node scripts/docs-check.js",
     "qa:offline": "npm test",

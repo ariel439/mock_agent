@@ -1,16 +1,19 @@
-# TCODE-102 — Make services easy to find
+# TCODE-102 — Add filters and an order summary
 
-**Type:** Story · **Priority:** High · **Project:** Service Hub
+**Type:** Story · **Priority:** High · **Project:** Soft Rock Coffee
 
-As an employee, I want to search and filter the service catalog so I can find the right service without scanning every card.
+As a customer, I want to filter the drinks menu and build an order so I can choose my coffee and see the total before ordering at the counter.
 
-Add live search and category filters above the catalog from TCODE-101. Match the existing magenta design and use plain JavaScript.
+Add temperature filters and a simple order summary to the menu from TCODE-101. Keep the current café design and photos. Use plain JavaScript with no backend or checkout.
 
 Acceptance criteria:
-- Filter cards as the user types, ignoring letter case and surrounding whitespace.
-- Include All, Infrastructure, Security, and Data filter buttons with a visible selected state.
-- Search and category filters work together.
-- Show the number of matching services and update it accessibly.
-- When nothing matches, show “No services found” and a Clear filters action.
-- Clear filters restores all six services, clears the search, and selects All.
-- Everything runs locally with no backend, provider, or external assets.
+- Add All drinks, Hot, and Iced buttons above the menu. Show the selected filter and the number of visible drinks.
+- Add an Add to order button to each drink card.
+- Below the menu, show an order summary with each selected drink, quantity, and line subtotal.
+- Adding a drink again increases its quantity instead of creating a duplicate row.
+- Include increase, decrease, and Remove controls; decreasing to zero removes the drink. Quantities range from 1 to 99.
+- Update the drink count and total immediately, using the menu's USD prices and accurate cent arithmetic.
+- Filtering the menu must not remove anything from the order.
+- Include a Clear order action and an empty-order message. Clearing restores the $0.00 total.
+- All controls must work with the keyboard and announce order updates accessibly.
+- Keep the order in memory only: refreshing the browser clears it. No payment, checkout, network requests, or persistent storage.
