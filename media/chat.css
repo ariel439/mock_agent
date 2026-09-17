@@ -1,0 +1,171 @@
+/* Layout and base styles copied from Enterprise Agent. */
+:root {
+  color-scheme: dark;
+  font-family: var(--vscode-font-family, "Segoe UI", sans-serif);
+  font-size: var(--vscode-font-size, 13px);
+  color: #e8e8e8;
+  background: #181818;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-width: 0;
+  background: #181818;
+}
+
+.topbar {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 10px 10px 6px;
+}
+
+.topbar h1 {
+  color: #f4f4f4;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.brand {
+  min-width: 0;
+}
+
+.messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 10px;
+  scrollbar-color: #5a5a5a transparent;
+}
+
+.message {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.message.user {
+  align-self: flex-end;
+  background: #2a2a2a;
+  border: 1px solid #353535;
+  border-radius: 8px;
+  color: #f1f1f1;
+  max-width: min(92%, 560px);
+  padding: 9px 11px;
+}
+
+.message.assistant {
+  align-self: stretch;
+  color: #e2e2e2;
+  display: grid;
+  gap: 8px;
+}
+
+.message.error {
+  color: #ffb4ab;
+}
+
+.composer {
+  background: #1f1f1f;
+  border: 1px solid #363636;
+  border-radius: 12px;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  grid-template-rows: auto auto 32px;
+  margin: 0 8px 8px;
+  padding: 10px;
+  position: relative;
+}
+
+.composer textarea {
+  background: transparent;
+  border: 0;
+  color: #f0f0f0;
+  font-size: 14px;
+  line-height: 1.5;
+  max-height: 252px;
+  min-height: 42px;
+  outline: 0;
+  overflow-y: auto;
+  padding: 2px;
+  resize: none;
+  width: 100%;
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.composer textarea:disabled {
+  opacity: 0.65;
+}
+
+.composer textarea::placeholder {
+  color: #8c8c8c;
+}
+
+.composer .send-button {
+  align-items: center;
+  align-self: end;
+  background: #f2f2f2;
+  border: 0;
+  border-radius: 50%;
+  color: #111;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 16px;
+  font-weight: 600;
+  grid-column: 2;
+  grid-row: 3;
+  height: 32px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+}
+
+.composer .send-button:hover {
+  background: #ffffff;
+}
+
+.composer .send-button:disabled {
+  background: #4a4a4a;
+  color: #8e8e8e;
+  cursor: default;
+}
+button, textarea { font: inherit; }
+[hidden] { display: none !important; }
+.brand { display: flex; align-items: center; gap: 8px; }
+.brand-mark { color: #df428f; font-size: 16px; font-weight: 750; line-height: 1; }
+#messages { display: flex; flex-direction: column; gap: 16px; }
+.message-content { font-size: 13px; line-height: 1.55; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.role { color: #8e8e8e; font-size: 11px; line-height: 1.4; }
+.file-list { border: 1px solid #363636; border-radius: 5px; overflow: hidden; }
+.file-row { display: flex; align-items: center; padding: 8px 10px; gap: 8px; background: #1f1f1f; }
+.file-row + .file-row { border-top: 1px solid #303030; }
+.file-row::before { content: '\2713'; color: #a5bda7; font-size: 11px; }
+.file-button, .diff-button { border: 0; background: transparent; color: #d0d0d0; font-size: 11px; padding: 0; cursor: pointer; }
+.file-button:hover, .diff-button:hover { color: #f1f1f1; text-decoration: underline; }
+.diff-button { margin-left: auto; color: #9a9a9a; }
+.applied { font-size: 11px; color: #929292; }
+#progress { display: flex; gap: 8px; align-items: center; color: #aaa; font-size: 11px; }
+.spinner { border: 1px solid #484848; border-top-color: #df428f; border-radius: 50%; width: 12px; height: 12px; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#error { padding: 8px 10px; color: #ffb4ab; font-size: 12px; }
+.composer:focus-within { border-color: #864261; }
+button:focus-visible { outline: 1px solid #df428f; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }

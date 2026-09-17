@@ -1,0 +1,10 @@
+node_modules/**
+.vscode/**
+.vscode-test/**
+artifacts/**
+tests/**
+scripts/**
+test-results/**
+demo-project/**
+package-lock.json
+.gitignore

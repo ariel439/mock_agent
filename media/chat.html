@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{cspSource}}; script-src 'nonce-{{nonce}}'; connect-src 'none';"><link rel="stylesheet" href="{{css}}"><title>T-Code</title></head>
+<body><div class="app-shell">
+  <header class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true">T</span><h1>T-Code</h1></div></header>
+  <main id="conversation" class="messages" aria-label="Chat messages"><div id="messages" role="log" aria-live="polite" aria-relevant="additions"></div><div id="progress" role="status" hidden><span class="spinner"></span><span id="progress-text"></span></div></main>
+  <div id="error" role="alert" hidden></div>
+  <form id="composer" class="composer"><textarea id="prompt" aria-label="Prompt" rows="1" placeholder="Message T-Code" maxlength="20000"></textarea><button id="send" class="send-button" type="submit" title="Send" aria-label="Send message"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form>
+</div><script nonce="{{nonce}}" src="{{js}}"></script></body></html>

@@ -1,0 +1,4 @@
+node_modules/
+artifacts/
+.vscode-test/
+test-results/
